@@ -1,0 +1,1782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SCANLINE — Desarrollo Web Personalizado</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=VT323&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg-black: #000;
+      --green-bright: #00ff88;
+      --green-dark: #0c5e2d;
+      --green-mid: #00cc66;
+      --green-neon: #39ff14;
+      --muted: #cfead6;
+      --glass: rgba(255, 255, 255, 0.03);
+      --container: 1200px;
+      --glow: 0 0 12px rgba(0, 255, 136, 0.4);
+      --glow-soft: 0 0 20px rgba(0, 255, 136, 0.15);
+      color-scheme: dark;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      overflow-x: hidden;
+      width: 100%;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-black);
+      color: var(--muted);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      width: 100%;
+      max-width: 100vw;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    a {
+      color: var(--green-bright);
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .container {
+      max-width: var(--container);
+      margin: 0 auto;
+      padding: 0 28px;
+      width: 100%;
+    }
+
+    body {
+      cursor: none;
+    }
+
+    .custom-cursor {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      background: var(--green-bright);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 10000;
+      transition: width 0.2s ease, height 0.2s ease;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 15px var(--green-bright);
+      will-change: transform;
+    }
+
+    .custom-cursor.hover {
+      width: 24px;
+      height: 24px;
+      background: var(--green-neon);
+    }
+
+    @media (hover: none) and (pointer: coarse) {
+      body {
+        cursor: auto;
+      }
+      .custom-cursor {
+        display: none;
+      }
+    }
+
+    .crt {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      background: radial-gradient(ellipse 1400px 800px at 50% 35%, rgba(12, 94, 45, 0.12), rgba(0, 0, 0, 0.95) 65%);
+      pointer-events: none;
+    }
+
+    .crt::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0, 0, 0, 0.06) 0px,
+        rgba(0, 0, 0, 0.06) 1px,
+        transparent 1px,
+        transparent 3px
+      );
+      opacity: 0.7;
+      animation: scan 10s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes scan {
+      0% { transform: translateY(0); }
+      100% { transform: translateY(12px); }
+    }
+
+    .floating-grid {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      opacity: 0.02;
+      background-image: 
+        linear-gradient(rgba(0, 255, 136, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 255, 136, 0.1) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: grid-move 30s linear infinite;
+      will-change: transform;
+    }
+
+    @keyframes grid-move {
+      0% { transform: translate(0, 0); }
+      100% { transform: translate(60px, 60px); }
+    }
+
+    header {
+      padding: 24px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      max-width: 100vw;
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.12);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      overflow-x: hidden;
+    }
+
+    main {
+      padding-top: 90px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+    }
+
+    .logo-box {
+      width: 70px;
+      height: 42px;
+      border-radius: 6px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.18), rgba(0, 204, 102, 0.1));
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'VT323', monospace;
+      color: var(--green-bright);
+      font-size: 20px;
+      letter-spacing: 2px;
+      text-shadow: var(--glow);
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      color: var(--green-bright);
+      text-shadow: var(--glow-soft);
+      letter-spacing: 1px;
+    }
+
+    .brand-text .tagline {
+      font-size: 11px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    nav a {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--muted);
+      border: 1px solid transparent;
+      transition: all 0.3s ease;
+    }
+
+    nav a:hover {
+      color: var(--green-bright);
+      border-color: rgba(0, 255, 136, 0.15);
+      background: rgba(0, 255, 136, 0.05);
+    }
+
+    nav a.cta {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.12), rgba(0, 204, 102, 0.08));
+      border: 1px solid rgba(0, 255, 136, 0.25);
+      color: var(--green-bright);
+      box-shadow: var(--glow-soft);
+      font-weight: 600;
+    }
+
+    nav a.cta:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.18), rgba(0, 204, 102, 0.12));
+      transform: translateY(-2px);
+    }
+
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .menu-toggle span {
+      width: 24px;
+      height: 2px;
+      background: var(--green-bright);
+      transition: 0.3s;
+      box-shadow: var(--glow-soft);
+    }
+
+    .hero {
+      padding: 80px 0 60px;
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .hero-left {
+      flex: 1 1 600px;
+    }
+
+    .hero h2 {
+      margin: 0 0 20px 0;
+      font-size: 56px;
+      font-family: 'VT323', monospace;
+      color: var(--green-bright);
+      text-shadow: var(--glow);
+      letter-spacing: 2px;
+      line-height: 1.1;
+    }
+
+    .glitch {
+      position: relative;
+      display: inline-block;
+    }
+
+    .hero p {
+      margin: 20px 0 32px 0;
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 620px;
+      line-height: 1.7;
+    }
+
+    .hero p strong {
+      color: var(--green-bright);
+      font-weight: 600;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 28px;
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 136, 0.3);
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 204, 102, 0.08));
+      color: var(--green-bright);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: var(--glow-soft);
+      font-family: 'Inter', sans-serif;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--glow), 0 10px 30px rgba(0, 255, 136, 0.1);
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.22), rgba(0, 204, 102, 0.12));
+    }
+
+    .btn.secondary {
+      background: transparent;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      color: var(--muted);
+      box-shadow: none;
+    }
+
+    .btn.secondary:hover {
+      border-style: solid;
+      border-color: rgba(0, 255, 136, 0.2);
+      color: var(--green-bright);
+      background: rgba(0, 255, 136, 0.05);
+    }
+
+    .btn.demo {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.15), rgba(0, 204, 102, 0.08));
+      border: 1px solid rgba(57, 255, 20, 0.3);
+      color: var(--green-neon);
+      font-size: 14px;
+      padding: 10px 20px;
+    }
+
+    .btn.demo:hover {
+      background: linear-gradient(135deg, rgba(57, 255, 20, 0.25), rgba(0, 204, 102, 0.12));
+      border-color: var(--green-neon);
+    }
+
+    .hero-card {
+      width: 100%;
+      max-width: 420px;
+      min-height: 300px;
+      border-radius: 12px;
+      padding: 0;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.75));
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 
+                  var(--glow-soft),
+                  0 20px 60px rgba(0, 0, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-card-img {
+      width: 100%;
+      height: 180px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 204, 102, 0.08));
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(0, 255, 136, 0.2);
+    }
+
+    .hero-card-img svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.6;
+    }
+
+    .hero-card-content {
+      padding: 28px;
+    }
+
+    .hero-card h3 {
+      margin: 0 0 12px 0;
+      color: var(--green-bright);
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      text-shadow: var(--glow-soft);
+    }
+
+    .hero-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    section {
+      padding: 60px 0;
+      width: 100%;
+      overflow-x: hidden;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 42px;
+      font-family: 'VT323', monospace;
+      color: var(--green-bright);
+      text-shadow: var(--glow);
+      margin-bottom: 50px;
+      letter-spacing: 2px;
+    }
+
+    .section-title::after {
+      content: '_';
+      animation: blink 1s infinite;
+      color: var(--green-neon);
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    .why-choose-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+      width: 100%;
+    }
+
+    .why-card {
+      padding: 32px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6));
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .why-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: linear-gradient(180deg, var(--green-bright), var(--green-mid));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .why-card:hover::before {
+      opacity: 1;
+    }
+
+    .why-card:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), rgba(0, 0, 0, 0.7));
+      border-color: rgba(0, 255, 136, 0.25);
+      transform: translateY(-5px);
+      box-shadow: var(--glow-soft);
+    }
+
+    .why-icon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .why-card h4 {
+      margin: 0 0 12px 0;
+      color: var(--green-bright);
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      text-shadow: var(--glow-soft);
+    }
+
+    .why-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 24px;
+      width: 100%;
+    }
+
+    .service-card {
+      padding: 28px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+      border: 1px solid rgba(0, 255, 136, 0.08);
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .service-card:hover {
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), rgba(0, 204, 102, 0.04));
+      border-color: rgba(0, 255, 136, 0.25);
+      transform: translateY(-5px);
+      box-shadow: var(--glow-soft);
+    }
+
+    .service-card::before {
+      content: '>';
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: var(--green-neon);
+      font-size: 24px;
+      font-family: 'VT323', monospace;
+      opacity: 0.3;
+      transition: all 0.3s ease;
+    }
+
+    .service-card:hover::before {
+      opacity: 1;
+      left: 24px;
+      text-shadow: var(--glow);
+    }
+
+    .service-icon {
+      width: 60px;
+      height: 60px;
+      margin-bottom: 16px;
+      padding-left: 28px;
+    }
+
+    .service-icon svg {
+      width: 100%;
+      height: 100%;
+      opacity: 0.4;
+    }
+
+    .service-card h4 {
+      margin: 0 0 10px 0;
+      color: var(--green-mid);
+      font-family: 'VT323', monospace;
+      font-size: 22px;
+      padding-left: 28px;
+    }
+
+    .service-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.6;
+      padding-left: 28px;
+    }
+
+    .cta-section {
+      text-align: center;
+      padding: 40px 0;
+      margin: 40px 0;
+    }
+
+    .cta-section p {
+      font-size: 18px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      max-width: 700px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .mission-vision {
+      background: linear-gradient(180deg, transparent, rgba(0, 255, 136, 0.02));
+    }
+
+    .mv-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 28px;
+      margin-top: 40px;
+    }
+
+    .mv-card {
+      padding: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5));
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      transition: all 0.3s ease;
+    }
+
+    .mv-card:hover {
+      transform: translateY(-5px);
+      box-shadow: var(--glow-soft);
+      border-color: rgba(0, 255, 136, 0.25);
+    }
+
+    .mv-card h3 {
+      margin: 0 0 16px 0;
+      color: var(--green-bright);
+      font-family: 'VT323', monospace;
+      font-size: 28px;
+      text-shadow: var(--glow-soft);
+    }
+
+    .mv-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      font-size: 15px;
+    }
+
+    .about-content {
+      padding: 40px;
+      border-radius: 12px;
+      background: var(--glass);
+      border: 1px solid rgba(0, 255, 136, 0.08);
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .about-content h3 {
+      color: var(--green-bright);
+      font-family: 'VT323', monospace;
+      font-size: 32px;
+      margin-bottom: 20px;
+      text-shadow: var(--glow-soft);
+    }
+
+    .about-content p {
+      margin: 16px 0;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 28px;
+      margin-top: 40px;
+      width: 100%;
+    }
+
+    .price-card {
+      padding: 36px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.6));
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .price-card.featured {
+      border: 2px solid var(--green-bright);
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.08), rgba(0, 0, 0, 0.7));
+      box-shadow: var(--glow);
+      transform: scale(1.03);
+    }
+
+    .price-card:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--glow);
+      border-color: var(--green-bright);
+    }
+
+    .price-card h4 {
+      margin: 0 0 8px 0;
+      font-family: 'VT323', monospace;
+      font-size: 26px;
+      color: var(--green-bright);
+      text-shadow: var(--glow-soft);
+    }
+
+    .price-card .subtitle {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .price-amount {
+      font-family: 'VT323', monospace;
+      font-size: 48px;
+      color: var(--green-neon);
+      margin: 20px 0;
+      text-shadow: var(--glow);
+    }
+
+    .price-features {
+      list-style: none;
+      margin: 24px 0;
+      flex-grow: 1;
+    }
+
+    .price-features li {
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .price-features li::before {
+      content: '✓';
+      color: var(--green-neon);
+      margin-right: 10px;
+      font-weight: bold;
+    }
+
+    .price-card-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .price-extras {
+      margin-top: 32px;
+      width: 100%;
+    }
+
+    .price-extras p {
+      text-align: center;
+      color: var(--muted);
+      padding: 16px;
+      background: rgba(0, 255, 136, 0.05);
+      border-radius: 8px;
+      border: 1px solid rgba(0, 255, 136, 0.1);
+      font-size: 14px;
+      margin: 16px 0;
+    }
+
+    .edit-notice {
+      margin-top: 40px;
+      padding: 24px;
+      background: linear-gradient(135deg, rgba(255, 136, 0, 0.08), rgba(0, 0, 0, 0.6));
+      border: 1px solid rgba(255, 136, 0, 0.25);
+      border-radius: 10px;
+      text-align: center;
+    }
+
+    .edit-notice h4 {
+      color: #ffa500;
+      font-family: 'VT323', monospace;
+      font-size: 24px;
+      margin-bottom: 12px;
+      text-shadow: 0 0 12px rgba(255, 136, 0, 0.4);
+    }
+
+    .edit-notice p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.7;
+      margin: 0;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      margin-top: 40px;
+    }
+
+    .testimonial {
+      padding: 28px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.5));
+      border-left: 3px solid var(--green-bright);
+      border-right: 1px solid rgba(0, 255, 136, 0.08);
+      border-top: 1px solid rgba(0, 255, 136, 0.08);
+      border-bottom: 1px solid rgba(0, 255, 136, 0.08);
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .testimonial::before {
+      content: '"';
+      position: absolute;
+      top: 10px;
+      left: 20px;
+      font-size: 60px;
+      color: var(--green-neon);
+      opacity: 0.15;
+      font-family: 'VT323', monospace;
+    }
+
+    .testimonial:hover {
+      transform: translateX(5px);
+      border-left-width: 5px;
+      box-shadow: var(--glow-soft);
+    }
+
+    .testimonial-text {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.7;
+      position: relative;
+      z-index: 1;
+    }
+
+    .testimonial-author {
+      font-weight: 600;
+      color: var(--green-bright);
+      font-size: 15px;
+    }
+
+    .contact-wrapper {
+      padding: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--glass), rgba(0, 0, 0, 0.3));
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      max-width: 800px;
+      margin: 0 auto;
+      box-shadow: var(--glow-soft);
+    }
+
+    .contact-wrapper h3 {
+      color: var(--green-bright);
+      font-family: 'VT323', monospace;
+      font-size: 36px;
+      margin-bottom: 12px;
+      text-shadow: var(--glow-soft);
+    }
+
+    .contact-wrapper > p {
+      margin: 0 0 32px 0;
+      color: var(--muted);
+    }
+
+    .contact-form {
+      display: grid;
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-group label {
+      color: var(--green-mid);
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      padding: 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 255, 136, 0.12);
+      background: rgba(0, 0, 0, 0.4);
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      width: 100%;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--green-bright);
+      box-shadow: var(--glow-soft);
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 120px;
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 40px 0;
+      border-top: 1px solid rgba(0, 255, 136, 0.12);
+      box-shadow: 0 -1px 20px rgba(0, 255, 136, 0.05);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand h4 {
+      font-family: 'VT323', monospace;
+      color: var(--green-bright);
+      font-size: 24px;
+      margin: 0 0 6px 0;
+      text-shadow: var(--glow-soft);
+    }
+
+    .footer-brand p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .socials {
+      display: flex;
+      gap: 12px;
+    }
+
+    .social-link {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(0, 255, 136, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--green-mid);
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .social-link:hover {
+      background: rgba(0, 255, 136, 0.08);
+      border-color: var(--green-bright);
+      color: var(--green-bright);
+      box-shadow: var(--glow-soft);
+    }
+
+    @media (max-width: 960px) {
+      header {
+        padding: 16px 0;
+      }
+
+      .menu-toggle {
+        display: flex;
+        z-index: 1001;
+      }
+
+      nav {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.95);
+        backdrop-filter: blur(20px);
+        flex-direction: column;
+        padding: 80px 20px 20px;
+        gap: 16px;
+        transition: right 0.4s ease;
+        border-left: 1px solid rgba(0, 255, 136, 0.2);
+        box-shadow: -5px 0 30px rgba(0, 0, 0, 0.8);
+      }
+
+      nav.active {
+        right: 0;
+      }
+
+      nav a {
+        width: 100%;
+        padding: 14px 20px;
+        text-align: left;
+        border: 1px solid rgba(0, 255, 136, 0.1);
+      }
+
+      .hero {
+        flex-direction: column;
+        padding: 40px 0 30px;
+        gap: 30px;
+      }
+
+      .hero h2 {
+        font-size: 42px;
+      }
+
+      .hero-card {
+        max-width: 100%;
+      }
+
+      .section-title {
+        font-size: 36px;
+      }
+
+      .why-choose-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .services-grid,
+      .pricing-grid,
+      .testimonials-grid,
+      .mv-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .price-card.featured {
+        transform: scale(1);
+      }
+    }
+
+    @media (max-width: 560px) {
+      .container {
+        padding: 0 16px;
+      }
+
+      header {
+        padding: 18px 0;
+      }
+
+      .brand-text h1 {
+        font-size: 20px;
+      }
+
+      .brand-text .tagline {
+        font-size: 10px;
+      }
+
+      .logo-box {
+        width: 60px;
+        height: 36px;
+        font-size: 16px;
+      }
+
+      .hero {
+        padding: 30px 0 20px;
+      }
+
+      .hero h2 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 14px;
+      }
+
+      .hero-card {
+        min-height: auto;
+      }
+
+      .hero-card-content {
+        padding: 20px;
+      }
+
+      .hero-card h3 {
+        font-size: 20px;
+      }
+
+      .hero-card p {
+        font-size: 13px;
+      }
+
+      .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+        width: 100%;
+      }
+
+      .section-title {
+        font-size: 28px;
+        margin-bottom: 30px;
+      }
+
+      .service-card,
+      .price-card,
+      .testimonial,
+      .mv-card,
+      .why-card {
+        padding: 20px;
+      }
+
+      .service-card h4,
+      .price-card h4 {
+        font-size: 20px;
+      }
+
+      .price-amount {
+        font-size: 38px;
+      }
+
+      .contact-wrapper {
+        padding: 24px 18px;
+      }
+
+      .contact-wrapper h3 {
+        font-size: 28px;
+      }
+
+      .form-group input,
+      .form-group textarea {
+        padding: 12px;
+        font-size: 14px;
+      }
+
+      footer {
+        padding: 30px 0 60px;
+      }
+
+      .socials {
+        justify-content: center;
+      }
+
+      .actions {
+        width: 100%;
+      }
+
+      .form-actions {
+        flex-direction: column;
+      }
+
+      .form-actions .btn,
+      .form-actions a {
+        width: 100%;
+      }
+
+      .cta-section .actions {
+        flex-direction: column;
+      }
+
+      .price-card-actions .btn {
+        width: 100%;
+      }
+    }
+
+    .whatsapp-float {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.15), rgba(0, 204, 102, 0.1));
+      border: 2px solid var(--green-bright);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      color: var(--green-bright);
+      z-index: 9999;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.4), 0 0 40px rgba(0, 255, 136, 0.2);
+      animation: pulse-whatsapp 2s infinite;
+    }
+
+    .whatsapp-float:hover {
+      transform: scale(1.1);
+      background: linear-gradient(135deg, rgba(0, 255, 136, 0.25), rgba(0, 204, 102, 0.15));
+      box-shadow: 0 0 30px rgba(0, 255, 136, 0.6), 0 0 60px rgba(0, 255, 136, 0.3);
+    }
+
+    @keyframes pulse-whatsapp {
+      0%, 100% {
+        box-shadow: 0 0 20px rgba(0, 255, 136, 0.4), 0 0 40px rgba(0, 255, 136, 0.2);
+      }
+      50% {
+        box-shadow: 0 0 30px rgba(0, 255, 136, 0.6), 0 0 60px rgba(0, 255, 136, 0.3);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .whatsapp-float {
+        bottom: 20px;
+        right: 20px;
+        width: 55px;
+        height: 55px;
+        font-size: 26px;
+      }
+    }
+  </style>
+</head>
+<body class="screen-curvature">
+  <div class="crt" aria-hidden="true"></div>
+  <div class="floating-grid" aria-hidden="true"></div>
+  <div class="custom-cursor"></div>
+
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="Splana.jpg" alt="Scanline Logo" class="logo-image" style="height: 50px; width: auto; border-radius: 6px; border: 1px solid rgba(0, 255, 136, 0.25); box-shadow: 0 0 12px rgba(0, 255, 136, 0.3);">
+        <div class="brand-text">
+          <h1>Scanline</h1>
+          <div class="tagline">Desarrollo Web Personalizado</div>
+        </div>
+      </div>
+
+      <div class="menu-toggle" id="menuToggle" aria-label="Menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+
+      <nav id="mainNav">
+        <a href="#services">Servicios</a>
+        <a href="#why-choose">¿Por qué elegirnos?</a>
+        <a href="#mission">Misión</a>
+        <a href="#about">Nosotros</a>
+        <a href="#pricing">Precios</a>
+        <a href="#testimonials">Testimonios</a>
+        <a href="#contact" class="cta">Contratar</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" role="region" aria-labelledby="hero-title">
+        <div class="hero-left">
+          <h2 id="hero-title">
+            <span class="glitch" data-text="Tu Web, Tu Estilo">Tu Web, Tu Estilo</span>
+          </h2>
+          <p>
+            En <strong>Scanline</strong> creamos sitios web únicos y personalizados según la identidad de tu marca. 
+            Desde diseños minimalistas y corporativos hasta propuestas creativas como esta web retro-digital. 
+            <strong>Cada proyecto refleja tu esencia</strong> con rendimiento moderno y presencia lista para vender.
+          </p>
+
+          <div class="actions">
+            <a href="#contact" class="btn">
+              <span>Contáctame</span>
+              <span style="font-family: 'VT323', monospace;">&gt;&gt;</span>
+            </a>
+            <a href="#pricing" class="btn secondary">Ver Planes</a>
+            <a href="https://wa.me/56933464967?text=Hola%20Scanline!%20Quiero%20cotizar%20una%20p%C3%A1gina%20web%20personalizada" target="_blank" class="btn secondary">Cotizar Ahora</a>
+          </div>
+        </div>
+
+        <aside class="hero-card" aria-label="Resumen de servicios">
+          <div class="hero-card-img">
+            <svg viewBox="0 0 400 180" xmlns="http://www.w3.org/2000/svg">
+              <rect x="50" y="30" width="300" height="120" fill="none" stroke="#00ff88" stroke-width="2" opacity="0.6"/>
+              <rect x="60" y="40" width="280" height="100" fill="rgba(0,255,136,0.05)"/>
+              <line x1="70" y1="55" x2="150" y2="55" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
+              <line x1="70" y1="70" x2="200" y2="70" stroke="#00cc66" stroke-width="2" opacity="0.6"/>
+              <line x1="70" y1="85" x2="130" y2="85" stroke="#00ff88" stroke-width="2" opacity="0.8"/>
+              <line x1="70" y1="100" x2="180" y2="100" stroke="#39ff14" stroke-width="2" opacity="0.7"/>
+              <line x1="70" y1="115" x2="160" y2="115" stroke="#00cc66" stroke-width="2" opacity="0.6"/>
+              <rect x="165" y="110" width="8" height="12" fill="#39ff14" opacity="0.8">
+                <animate attributeName="opacity" values="0;1;0" dur="1s" repeatCount="indefinite"/>
+              </rect>
+              <circle cx="330" cy="50" r="3" fill="#00ff88" opacity="0.6"/>
+              <circle cx="330" cy="65" r="3" fill="#00cc66" opacity="0.6"/>
+              <circle cx="330" cy="80" r="3" fill="#39ff14" opacity="0.6"/>
+            </svg>
+          </div>
+          <div class="hero-card-content">
+            <h3>¿Qué Hacemos?</h3>
+            <p>
+              <strong>Scanline</strong> entrega sitios web completos: landings, corporativos, 
+              catálogos online con WhatsApp y mantenimiento continuo. Diseño personalizado según tu marca, 
+              adaptación móvil perfecta y velocidad de carga optimizada.
+            </p>
+          </div>
+        </aside>
+      </section>
+
+      <section id="why-choose" class="why-choose-section">
+        <h2 class="section-title">¿POR QUÉ ELEGIRNOS?</h2>
+        <div class="why-choose-grid">
+          <div class="why-card">
+            <span class="why-icon">🎨</span>
+            <h4>Diseño 100% Personalizado</h4>
+            <p>
+              Cada sitio web es creado desde cero según tu marca. No usamos plantillas genéricas. 
+              Tu web será única y reflejará la identidad de tu negocio.
+            </p>
+          </div>
+          <div class="why-card">
+            <span class="why-icon">⚡</span>
+            <h4>Entrega Rápida</h4>
+            <p>
+              Landing pages en 1 semana, sitios completos en menos de 2 semanas. 
+              Trabajamos con eficiencia sin sacrificar calidad.
+            </p>
+          </div>
+          <div class="why-card">
+            <span class="why-icon">🚀</span>
+            <h4>Páginas Optimizadas y Profesionales</h4>
+            <p>
+              Código limpio, carga rápida, SEO básico incluido y diseño responsive. 
+              Tu web funcionará perfectamente en todos los dispositivos.
+            </p>
+          </div>
+          <div class="why-card">
+            <span class="why-icon">💰</span>
+            <h4>Precios Accesibles</h4>
+            <p>
+              Planes desde $30.000 CLP. Calidad profesional a precios justos para emprendedores, 
+              startups y pymes que están comenzando.
+            </p>
+          </div>
+          <div class="why-card">
+            <span class="why-icon">🌐</span>
+            <h4>Hosting Incluido</h4>
+            <p>
+              Tu sitio se publica en Netlify (hosting profesional gratuito) con SSL incluido. 
+              Opción de dominio propio disponible según tu plan.
+            </p>
+          </div>
+          <div class="why-card">
+            <span class="why-icon">🛠️</span>
+            <h4>Soporte Básico Post-Entrega</h4>
+            <p>
+              No te dejamos solo después de la entrega. Incluimos soporte básico para resolver dudas 
+              y planes de mantenimiento mensual disponibles.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="services" class="services-section">
+        <h2 class="section-title">SERVICIOS</h2>
+        <div class="services-grid">
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="15" width="40" height="30" fill="none" stroke="#00ff88" stroke-width="2"/>
+                <line x1="15" y1="22" x2="35" y2="22" stroke="#00ff88" stroke-width="2"/>
+                <line x1="15" y1="28" x2="40" y2="28" stroke="#00cc66" stroke-width="1.5"/>
+                <line x1="15" y1="34" x2="30" y2="34" stroke="#00ff88" stroke-width="1.5"/>
+                <circle cx="45" cy="50" r="8" fill="none" stroke="#39ff14" stroke-width="2"/>
+                <path d="M 42 50 L 44 52 L 48 48" stroke="#39ff14" stroke-width="2" fill="none"/>
+              </svg>
+            </div>
+            <h4>Landing Express</h4>
+            <p>Página de una sola sección optimizada para convertir visitantes en clientes. Diseño personalizado según tu marca.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="12" width="44" height="36" fill="none" stroke="#00ff88" stroke-width="2"/>
+                <line x1="8" y1="20" x2="52" y2="20" stroke="#00ff88" stroke-width="2"/>
+                <rect x="12" y="26" width="18" height="12" fill="rgba(0,255,136,0.2)" stroke="#00cc66" stroke-width="1"/>
+                <rect x="32" y="26" width="16" height="4" fill="rgba(0,255,136,0.15)" stroke="#00cc66" stroke-width="1"/>
+                <rect x="32" y="32" width="16" height="4" fill="rgba(0,255,136,0.15)" stroke="#00cc66" stroke-width="1"/>
+              </svg>
+            </div>
+            <h4>Sitio Corporativo</h4>
+            <p>Sitio multipágina con identidad de marca, formulario de contacto y área profesional completa.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <rect x="10" y="10" width="20" height="20" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="2"/>
+                <rect x="10" y="35" width="20" height="20" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="2"/>
+                <rect x="35" y="10" width="20" height="20" fill="rgba(0,255,136,0.15)" stroke="#00ff88" stroke-width="2"/>
+                <circle cx="45" cy="45" r="10" fill="rgba(57,255,20,0.2)" stroke="#39ff14" stroke-width="2"/>
+                <path d="M 40 45 L 43 48 L 50 41" stroke="#39ff14" stroke-width="2" fill="none" stroke-linecap="round"/>
+              </svg>
+            </div>
+            <h4>Catálogo Online</h4>
+            <p>Muestra tus productos con integración directa a WhatsApp. Los clientes finalizan su compra por chat personalizado.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="30" r="20" fill="none" stroke="#00ff88" stroke-width="2"/>
+                <path d="M 30 15 L 30 30 L 40 35" stroke="#00ff88" stroke-width="2" fill="none" stroke-linecap="round"/>
+                <circle cx="30" cy="30" r="2" fill="#39ff14"/>
+              </svg>
+            </div>
+            <h4>Mantenimiento Web</h4>
+            <p>Actualizaciones periódicas, soporte técnico y mejoras mensuales para mantener tu web al día.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 15 25 Q 20 15 30 20 T 45 25" fill="none" stroke="#00ff88" stroke-width="2"/>
+                <circle cx="15" cy="25" r="3" fill="#00ff88"/>
+                <circle cx="30" cy="20" r="3" fill="#00cc66"/>
+                <circle cx="45" cy="25" r="3" fill="#39ff14"/>
+                <rect x="10" y="35" width="40" height="15" fill="rgba(0,255,136,0.1)" stroke="#00ff88" stroke-width="2"/>
+                <line x1="15" y1="40" x2="30" y2="40" stroke="#00ff88" stroke-width="1.5"/>
+                <line x1="15" y1="45" x2="45" y2="45" stroke="#00cc66" stroke-width="1.5"/>
+              </svg>
+            </div>
+            <h4>Diseño Personalizado</h4>
+            <p>Cada diseño refleja la esencia de tu marca. Desde minimalista hasta retro-digital como esta web.</p>
+          </div>
+          <div class="service-card">
+            <div class="service-icon">
+              <svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="30" cy="25" r="12" fill="none" stroke="#00ff88" stroke-width="2"/>
+                <path d="M 20 32 L 15 45 L 22 42 L 25 48 L 30 35" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M 40 32 L 45 45 L 38 42 L 35 48 L 30 35" fill="none" stroke="#00ff88" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="30" cy="25" r="5" fill="rgba(57,255,20,0.3)"/>
+              </svg>
+            </div>
+            <h4>Optimización SEO</h4>
+            <p>Mejora tu posicionamiento en buscadores con técnicas avanzadas y contenido optimizado.</p>
+          </div>
+        </div>
+
+        <div class="cta-section">
+          <p>¿Listo para llevar tu negocio al siguiente nivel digital?</p>
+          <div class="actions">
+            <a href="#contact" class="btn">Contáctame</a>
+            <a href="#pricing" class="btn secondary">Ver Planes</a>
+          </div>
+        </div>
+      </section>
+
+      <section id="mission" class="mission-vision">
+        <h2 class="section-title">MISIÓN & VISIÓN</h2>
+        <div class="mv-grid">
+          <div class="mv-card">
+            <h3>🎯 Nuestra Misión</h3>
+            <p>
+              Crear sitios web personalizados, visualmente únicos y técnicamente sólidos que combinen 
+              creatividad con identidad digital real. Cada proyecto es una oportunidad para transformar 
+              la presencia online de nuestros clientes, entregando soluciones que no solo se ven bien, 
+              sino que también funcionan perfectamente y convierten visitantes en clientes.
+            </p>
+          </div>
+          <div class="mv-card">
+            <h3>🚀 Nuestra Visión</h3>
+            <p>
+              Convertirnos en un referente en diseño web personalizado, destacando por la calidad de 
+              nuestro trabajo, estilo propio y capacidad de crear experiencias digitales memorables. 
+              Aspiramos a ser la primera opción para emprendedores y empresas que buscan una web única, 
+              auténtica y que realmente represente su esencia en el mundo digital.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" class="about-section">
+        <div class="about-content">
+          <h3>Sobre Scanline</h3>
+          <p>
+            Somos un estudio digital especializado en crear sitios web únicos que reflejan la identidad 
+            de cada cliente. Cada proyecto tiene su propio diseño personalizado: desde estéticas modernas 
+            y minimalistas hasta propuestas creativas como esta misma web retro-digital con efectos CRT.
+          </p>
+          <p>
+            <strong>No usamos plantillas genéricas.</strong> Cada sitio web que creamos es diseñado desde cero 
+            para tu marca, tus objetivos y tu audiencia. Ya sea que necesites un diseño elegante y corporativo, 
+            algo creativo y diferente, o una propuesta totalmente personalizada, nos adaptamos a tu visión.
+          </p>
+          <p>
+            Fundado con pasión por el diseño web personalizado, ofrecemos soluciones accesibles y 
+            escalables para emprendedores, startups y pymes. Cada proyecto es tratado con atención al 
+            detalle, combinando código limpio, diseño impactante y funcionalidad impecable. Tu éxito digital 
+            es nuestra misión.
+          </p>
+        </div>
+      </section>
+
+      <section id="pricing" class="pricing-section">
+        <h2 class="section-title">PLANES & PRECIOS</h2>
+        <div class="pricing-grid">
+          <div class="price-card">
+            <h4>Landing Starter</h4>
+            <p class="subtitle">Ideal para promociones y servicios</p>
+            <div class="price-amount">$30.000</div>
+            <ul class="price-features">
+              <li>Diseño responsive 1 página</li>
+              <li>Formulario de contacto</li>
+              <li>Optimización básica SEO</li>
+              <li>Entrega aprox. 1 semana</li>
+              <li>2 revisiones incluidas</li>
+            </ul>
+            <div class="price-card-actions">
+              <a href="https://dulcearomademo.netlify.app" target="_blank" class="btn demo">
+                <span>Ver DEMO</span>
+                <span style="font-family: 'VT323', monospace;">↗</span>
+              </a>
+              <a href="#contact" class="btn">Cotizar Ahora</a>
+            </div>
+          </div>
+
+          <div class="price-card featured">
+            <h4>Sitio Pro</h4>
+            <p class="subtitle">Sitio multipágina completo</p>
+            <div class="price-amount">$60.000</div>
+            <ul class="price-features">
+              <li>Diseño responsive multipágina</li>
+              <li>Sistema de contacto avanzado</li>
+              <li>Integración redes sociales</li>
+              <li>SEO optimizado</li>
+              <li>Entrega: menos de 2 semanas</li>
+              <li>3 revisiones incluidas</li>
+              <li>Capacitación básica</li>
+            </ul>
+            <div class="price-card-actions">
+              <a href="https://titangymdemo.netlify.app" target="_blank" class="btn demo">
+                <span>Ver DEMO</span>
+                <span style="font-family: 'VT323', monospace;">↗</span>
+              </a>
+              <a href="#contact" class="btn">Cotizar Ahora</a>
+            </div>
+          </div>
+
+          <div class="price-card">
+            <h4>Catálogo Online</h4>
+            <p class="subtitle">Muestra tus productos online</p>
+            <div class="price-amount">$120.000</div>
+            <ul class="price-features">
+              <li>Catálogo ilimitado de productos</li>
+              <li>Integración WhatsApp personalizada</li>
+              <li>Mensajes automáticos por producto</li>
+              <li>Panel de administración</li>
+              <li>SEO para productos</li>
+              <li>Entrega: menos de 2 semanas</li>
+              <li>4 revisiones incluidas</li>
+              <li>Capacitación completa</li>
+            </ul>
+            <div class="price-card-actions">
+              <a href="https://demoscanline.netlify.app" target="_blank" class="btn demo">
+                <span>Ver DEMO</span>
+                <span style="font-family: 'VT323', monospace;">↗</span>
+              </a>
+              <a href="#contact" class="btn">Cotizar Ahora</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="price-extras">
+          <p>
+            <strong style="color: var(--green-bright);">Extras disponibles:</strong> 
+            Hosting + dominio anual, diseño de logo básico, redacción de contenido (copywriting). 
+            Planes de mantenimiento desde <strong style="color: var(--green-neon);">$15.000/mes</strong>.
+          </p>
+          <p>
+            <strong style="color: var(--green-mid);">📌 Sobre el hosting:</strong> 
+            Si no adquieres dominio propio, tu sitio será publicado en <strong style="color: var(--green-bright);">Netlify</strong> 
+            (plataforma gratuita de hosting profesional) con un subdominio tipo <em>tunegocio.netlify.app</em>. 
+            Funcional, rápido y con certificado SSL incluido. Ideal para empezar y puedes migrar a dominio propio después.
+          </p>
+        </div>
+
+        <div class="edit-notice">
+          <h4>⚠️ Importante: Modificaciones a tu Sitio Web</h4>
+          <p>
+            Una vez entregado tu sitio web, cualquier modificación o actualización de contenido deberá ser solicitada 
+            directamente a nuestro equipo. No podrás realizar cambios por tu cuenta sin acceso al código fuente. 
+            Contáctanos por WhatsApp o email para cualquier ajuste que necesites. Ofrecemos planes de mantenimiento 
+            mensual para facilitar actualizaciones periódicas.
+          </p>
+        </div>
+      </section>
+
+      <section id="testimonials" class="testimonials-section">
+        <h2 class="section-title">TESTIMONIOS</h2>
+        <div class="testimonials-grid">
+          <div class="testimonial">
+            <p class="testimonial-text">
+              La landing que crearon aumentó nuestras reservas en un 60%. El diseño personalizado 
+              capturó perfectamente la esencia de nuestro café.
+            </p>
+            <div class="testimonial-author">María González — Café Andes</div>
+          </div>
+
+          <div class="testimonial">
+            <p class="testimonial-text">
+              Trabajo rápido, claro y con excelente soporte post-entrega. El diseño fue exactamente 
+              lo que necesitábamos para nuestro taller. Totalmente recomendado.
+            </p>
+            <div class="testimonial-author">Gabriel Torres — Taller Mecánico RT</div>
+          </div>
+
+          <div class="testimonial">
+            <p class="testimonial-text">
+              El catálogo con WhatsApp integrado fue perfecto para nuestra tienda. Las ventas online 
+              aumentaron y los clientes aman lo fácil que es comprar.
+            </p>
+            <div class="testimonial-author">Lucía Morales — Tienda Vintage Lu</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="contact" class="contact-section">
+        <div class="contact-wrapper">
+          <h3>Iniciar Proyecto</h3>
+          <p>Completa este formulario y te enviaremos una propuesta personalizada sin compromiso.</p>
+
+          <form class="contact-form" id="contactForm">
+            <div class="form-group">
+              <label for="name">&gt; Nombre completo</label>
+              <input type="text" id="name" name="name" required placeholder="Tu nombre">
+            </div>
+
+            <div class="form-group">
+              <label for="email">&gt; Email de contacto</label>
+              <input type="email" id="email" name="email" required placeholder="tu@email.com">
+            </div>
+
+            <div class="form-group">
+              <label for="service">&gt; Servicio de interés</label>
+              <input type="text" id="service" name="service" placeholder="Ej: Landing Express, Sitio Pro..." required>
+            </div>
+
+            <div class="form-group">
+              <label for="message">&gt; Descripción del proyecto</label>
+              <textarea id="message" name="message" placeholder="Cuéntanos sobre tu proyecto..."></textarea>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" class="btn">
+                <span>Enviar Solicitud</span>
+                <span style="font-family: 'VT323', monospace;">&gt;&gt;</span>
+              </button>
+              <a href="https://wa.me/56933464967?text=Hola%20Scanline!%20Quiero%20crear%20una%20p%C3%A1gina%20web%20personalizada%20para%20mi%20negocio.%20%C2%BFPodr%C3%ADan%20contactarme%3F" target="_blank" class="btn secondary">
+                <span>📱 WhatsApp</span>
+              </a>
+            </div>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="footer-content">
+        <div class="footer-brand">
+          <h4>SCANLINE_</h4>
+          <p style="margin-bottom: 12px; font-size: 15px; color: var(--green-bright); font-weight: 500;">
+            Diseñamos tu sitio, tú manejas el futuro.
+          </p>
+          <p>© <span id="currentYear"></span> Scanline Studio — Desarrollo Web Personalizado</p>
+          <p style="margin-top: 8px; font-size: 11px; font-family: 'VT323', monospace; color: var(--green-mid);">
+            [ SYSTEM ONLINE | UPTIME: 99.9% ]
+          </p>
+          <p style="margin-top: 16px; font-size: 14px; line-height: 1.8;">
+            📧 <a href="mailto:sc4nl1ne@gmail.com">sc4nl1ne@gmail.com</a><br>
+            📱 <a href="https://wa.me/56933464967" target="_blank">+56 9 3346 4967</a><br>
+            📷 <a href="https://instagram.com/sc4nl1ne" target="_blank">@sc4nl1ne</a>
+          </p>
+        </div>
+
+        <div class="socials" aria-label="Redes sociales">
+          <a href="mailto:sc4nl1ne@gmail.com" class="social-link" title="Email" aria-label="Email">📧</a>
+          <a href="https://wa.me/56933464967" target="_blank" class="social-link" title="WhatsApp" aria-label="WhatsApp">💬</a>
+          <a href="https://instagram.com/sc4nl1ne" target="_blank" class="social-link" title="Instagram" aria-label="Instagram">IG</a>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const cursor = document.querySelector('.custom-cursor');
+    
+    let mouseX = 0;
+    let mouseY = 0;
+    let cursorX = 0;
+    let cursorY = 0;
+
+    document.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+    });
+
+    function animateCursor() {
+      cursorX += (mouseX - cursorX) * 0.2;
+      cursorY += (mouseY - cursorY) * 0.2;
+      cursor.style.left = cursorX + 'px';
+      cursor.style.top = cursorY + 'px';
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    const interactiveElements = document.querySelectorAll('a, button, input, textarea, .service-card, .price-card, .testimonial, .mv-card, .why-card');
+    
+    interactiveElements.forEach(el => {
+      el.addEventListener('mouseenter', () => cursor.classList.add('hover'));
+      el.addEventListener('mouseleave', () => cursor.classList.remove('hover'));
+    });
+
+    document.getElementById('currentYear').textContent = new Date().getFullYear();
+
+    const menuToggle = document.getElementById('menuToggle');
+    const mainNav = document.getElementById('mainNav');
+
+    menuToggle.addEventListener('click', () => {
+      mainNav.classList.toggle('active');
+      
+      const spans = menuToggle.querySelectorAll('span');
+      if (mainNav.classList.contains('active')) {
+        spans[0].style.transform = 'rotate(45deg) translate(6px, 6px)';
+        spans[1].style.opacity = '0';
+        spans[2].style.transform = 'rotate(-45deg) translate(6px, -6px)';
+      } else {
+        spans[0].style.transform = 'none';
+        spans[1].style.opacity = '1';
+        spans[2].style.transform = 'none';
+      }
+    });
+
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth <= 960) {
+          mainNav.classList.remove('active');
+          const spans = menuToggle.querySelectorAll('span');
+          spans[0].style.transform = 'none';
+          spans[1].style.opacity = '1';
+          spans[2].style.transform = 'none';
+        }
+      });
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const service = document.getElementById('service').value;
+      const message = document.getElementById('message').value;
+      
+      const whatsappMessage = `Hola Scanline! 👋\n\nMe interesa contratar sus servicios:\n\n📝 Nombre: ${name}\n📧 Email: ${email}\n🎯 Servicio: ${service}\n💬 Mensaje: ${message}`;
+      
+      const whatsappURL = `https://wa.me/56933464967?text=${encodeURIComponent(whatsappMessage)}`;
+      window.open(whatsappURL, '_blank');
+      
+      e.target.reset();
+      alert('✅ Redirigiendo a WhatsApp...');
+    });
+
+    const observerOptions = {
+      threshold: 0.1,
+      rootMargin: '0px 0px -100px 0px'
+    };
+
+    const animateOnScroll = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }
+      });
+    }, observerOptions);
+
+    document.querySelectorAll('.service-card, .price-card, .testimonial, .about-content, .mv-card, .why-card').forEach(element => {
+      element.style.opacity = '0';
+      element.style.transform = 'translateY(30px)';
+      element.style.transition = 'all 0.6s ease';
+      animateOnScroll.observe(element);
+    });
+
+    const glitchElement = document.querySelector('.glitch');
+    if (glitchElement) {
+      const originalText = glitchElement.textContent;
+      glitchElement.textContent = '';
+      
+      let charIndex = 0;
+      const typingInterval = setInterval(() => {
+        if (charIndex < originalText.length) {
+          glitchElement.textContent += originalText.charAt(charIndex);
+          charIndex++;
+        } else {
+          clearInterval(typingInterval);
+          glitchElement.setAttribute('data-text', originalText);
+        }
+      }, 80);
+    }
+
+    console.log('%c▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓', 'color: #00ff88; font-family: monospace;');
+    console.log('%c█ SCANLINE SYSTEM v2.0    █', 'color: #00ff88; font-family: monospace; font-weight: bold;');
+    console.log('%c▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓', 'color: #00ff88; font-family: monospace;');
+    console.log('%c> SISTEMA OPERATIVO CARGADO', 'color: #00ff88; font-family: monospace;');
+    console.log('%c> MÓDULOS: [ ████████ ] 100%', 'color: #00cc66; font-family: monospace;');
+    console.log('%c> ESTADO: ONLINE', 'color: #39ff14; font-family: monospace;');
+    console.log('%c> CONTACTO: sc4nl1ne@gmail.com', 'color: #00ff88; font-family: monospace;');
+    console.log('%c> WHATSAPP: +56 9 3346 4967', 'color: #00ff88; font-family: monospace;');
+    console.log('%c> BIENVENIDO AL FUTURO RETRO', 'color: #00ff88; font-family: monospace; font-weight: bold;');
+    console.log('%c▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓', 'color: #00ff88; font-family: monospace;');
+  </script>
+
+  <a href="https://wa.me/56933464967?text=Hola%20Scanline!%20Quiero%20crear%20una%20p%C3%A1gina%20web%20personalizada.%20%C2%BFPodr%C3%ADan%20contactarme%3F" target="_blank" class="whatsapp-float" title="Contactar por WhatsApp" aria-label="Chat de WhatsApp">
+    💬
+  </a>
+</body>
+</html>
