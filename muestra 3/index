@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SCANLINE — Soluciones Web Corporativas (Enterprise)</title>
+  <meta name="description" content="Soluciones web corporativas a medida: sitios, portales, intranets y microsites con soporte SLA, seguridad y rendimiento. Paquetes Enterprise." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --accent:#0ea5a3; --accent-2:#036666; --glass: rgba(2,6,23,0.04);
+      --max:1200px; --radius:14px; color-scheme: light;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{font-family:Inter,system-ui,Arial; background:linear-gradient(180deg,var(--bg),#eef2f6); color:#0f172a; margin:0; -webkit-font-smoothing:antialiased}
+    a{text-decoration:none;color:inherit}
+
+    /* container */
+    .wrap{max-width:var(--max);margin:0 auto;padding:28px}
+
+    /* NAV */
+    header.top{position:sticky;top:0;backdrop-filter:blur(6px);background:rgba(255,255,255,0.6);border-bottom:1px solid rgba(15,23,42,0.04);z-index:60}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;gap:12px;max-width:var(--max);margin:0 auto;padding:14px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand .logo{width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent-2),var(--accent));display:flex;align-items:center;justify-content:center;color:white;font-weight:800}
+    .brand h1{font-size:18px;margin:0}
+    .menu{display:flex;gap:18px;align-items:center}
+    .menu a{color:var(--muted);font-weight:600}
+    .cta{background:var(--accent);color:white;padding:10px 14px;border-radius:10px;font-weight:700}
+
+    /* HERO */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:36px;align-items:center;padding:60px 0}
+    .hero-left h2{font-size:40px;line-height:1.02;margin:0 0 18px}
+    .kicker{display:inline-block;background:var(--glass);padding:6px 10px;border-radius:999px;color:var(--accent-2);font-weight:700;margin-bottom:12px}
+    .hero-left p{color:var(--muted);margin-bottom:22px}
+    .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
+
+    /* Hero right card */
+    .card-hero{background:var(--card);border-radius:16px;box-shadow:0 10px 40px rgba(2,6,23,0.06);padding:22px}
+    .card-hero h4{margin:0 0 6px}
+    .stat{display:flex;gap:14px;align-items:center;margin-top:12px}
+    .stat strong{font-size:20px;color:var(--accent)}
+
+    /* SECTIONS */
+    section{padding:36px 0}
+    .section-title{font-size:22px;color:#0f172a;font-weight:800;margin-bottom:6px}
+    .section-lead{color:var(--muted);margin-bottom:18px}
+
+    /* Features grid */
+    .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:18px}
+    .feature{background:var(--card);padding:18px;border-radius:12px;box-shadow:0 6px 20px rgba(2,6,23,0.04)}
+    .feature h5{margin:6px 0 6px;color:var(--accent-2)}
+    .feature p{color:var(--muted);font-size:14px}
+
+    /* CASE STUDIES */
+    .case-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+    .case{background:linear-gradient(180deg,white,#fbfdfe);padding:16px;border-radius:12px;border:1px solid rgba(2,6,23,0.03)}
+    .case img{width:100%;height:160px;object-fit:cover;border-radius:10px}
+
+    /* TECH STACK / INTEGRATIONS */
+    .chips{display:flex;flex-wrap:wrap;gap:10px}
+    .chip{background:var(--glass);padding:8px 12px;border-radius:999px;color:var(--muted);font-weight:700}
+
+    /* PRICING TABLE */
+    .pricing{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+    .plan{background:var(--card);padding:22px;border-radius:12px;border:1px solid rgba(2,6,23,0.04);box-shadow:0 10px 40px rgba(2,6,23,0.04);display:flex;flex-direction:column}
+    .plan.pop{border:2px solid var(--accent);transform:translateY(-6px);box-shadow:0 24px 60px rgba(2,6,23,0.08)}
+    .plan h4{margin:0 0 6px}
+    .price{font-size:26px;color:var(--accent);font-weight:800}
+    .plan ul{margin-top:12px;padding-left:18px;color:var(--muted)}
+
+    /* TABLE / COMPARISON */
+    .compare{overflow:auto;background:var(--card);padding:12px;border-radius:12px;border:1px solid rgba(2,6,23,0.03)}
+    table{width:100%;border-collapse:collapse}
+    table td,table th{padding:12px;border-bottom:1px dashed rgba(2,6,23,0.04);text-align:left}
+
+    /* FAQ */
+    .faq{display:grid;gap:10px}
+    .q{background:var(--card);padding:14px;border-radius:10px}
+
+    /* CONTACT FORM */
+    .contact{display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+    form{display:flex;flex-direction:column;gap:12px}
+    input,textarea,select{padding:12px;border-radius:10px;border:1px solid rgba(2,6,23,0.06);background:white}
+    button[type=submit]{background:var(--accent);color:white;padding:12px;border-radius:10px;border:none;font-weight:800}
+
+    /* FOOTER */
+    footer{padding:40px 0;background:#061018;color:#9fb0b0}
+
+    /* responsive adjustments */
+    @media(max-width:980px){.hero{grid-template-columns:1fr;}.contact{grid-template-columns:1fr}.nav .menu{display:none}.nav .hamb{display:inline-block}}
+
+    /* small animation helpers */
+    .reveal{opacity:0;transform:translateY(10px);transition:opacity .7s,transform .7s}
+    .reveal.visible{opacity:1;transform:none}
+
+    /* accessibility focus */
+    :focus{outline:3px solid rgba(14,165,163,0.18);outline-offset:2px}
+  </style>
+</head>
+<body>
+  <header class="top" role="banner">
+    <div class="nav-inner">
+      <div class="brand"><div class="logo">S</div><h1>SCANLINE</h1></div>
+      <nav class="menu" role="navigation" aria-label="Main">
+        <a href="#solutions">Soluciones</a>
+        <a href="#casestudies">Casos</a>
+        <a href="#pricing">Precios</a>
+        <a href="#contact">Contacto</a>
+        <a class="cta" href="#contact">Solicitar demo</a>
+      </nav>
+      <button class="hamb" aria-label="abrir menú" onclick="toggleMenu()">☰</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-left">
+        <div class="kicker">Soluciones Corporativas</div>
+        <h2>Sitios web y plataformas enterprise a medida — diseño, seguridad y SLA</h2>
+        <p class="reveal">Entregamos productos digitales que representan la imagen de tu empresa, mejoran conversión y cumplen estándares de seguridad, accesibilidad y rendimiento. Implementación ágil con coordinación de stakeholders y soporte dedicado.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#contact">Solicitar demo</a>
+          <a class="btn btn-ghost" href="#casestudies">Ver casos</a>
+        </div>
+        <div style="margin-top:18px;display:flex;gap:22px;flex-wrap:wrap">
+          <div class="stat"><strong>+200</strong><div style="font-size:13px;color:var(--muted)">Horas de QA por proyecto</div></div>
+          <div class="stat"><strong>99.9%</strong><div style="font-size:13px;color:var(--muted)">Uptime garantizado</div></div>
+          <div class="stat"><strong>Equipo</strong><div style="font-size:13px;color:var(--muted)">Diseño • Dev • Infra</div></div>
+        </div>
+      </div>
+
+      <aside class="card-hero reveal">
+        <h4>Qué incluye el servicio Enterprise</h4>
+        <ul style="color:var(--muted);margin-top:8px">
+          <li>Diseño UX/UI dedicado (3 propuestas)</li>
+          <li>Desarrollo Frontend y Backend</li>
+          <li>Integración con CRM y APIs</li>
+          <li>SSL, WAF, backups, monitoreo 24/7</li>
+          <li>Documentación técnica y training</li>
+        </ul>
+        <div style="margin-top:14px"><a class="cta" href="#contact">Agendar demo</a></div>
+      </aside>
+    </section>
+
+    <!-- SOLUTIONS / FEATURES -->
+    <section id="solutions" class="reveal">
+      <div class="section-title">Soluciones para empresas</div>
+      <div class="section-lead">Construimos desde microsites comerciales hasta portales corporativos e intranets con workflows y autenticación segura.</div>
+      <div class="features">
+        <div class="feature"><h5>Arquitectura escalable</h5><p>Diseño cloud-native, CI/CD y despliegue en infra administrada o propia.</p></div>
+        <div class="feature"><h5>Seguridad avanzada</h5><p>Pen-tests, WAF, cifrado en tránsito y reposo, gestión de roles y auditoría.</p></div>
+        <div class="feature"><h5>Integraciones</h5><p>Conectamos CRMs, ERPs, pasarelas de pago, SSO (SAML / OIDC) y APIs internas.</p></div>
+        <div class="feature"><h5>Accesibilidad</h5><p>WCAG 2.1 AA como estándar para asegurar alcance y cumplimiento legal.</p></div>
+        <div class="feature"><h5>Rendimiento</h5><p>Optimización de assets, lazy-loading, image CDN y Lighthouse 90+ target.</p></div>
+        <div class="feature"><h5>Soporte SLA</h5><p>Contratos con tiempos de respuesta y soporte técnico 24/7 opcional.</p></div>
+      </div>
+    </section>
+
+    <!-- CASE STUDIES -->
+    <section id="casestudies" class="reveal">
+      <div class="section-title">Casos de éxito</div>
+      <div class="section-lead">Proyectos con impacto medible en conversiones y procesos internos.</div>
+      <div class="case-grid">
+        <div class="case">
+          <img src="https://images.unsplash.com/photo-1559526324-593bc073d938?auto=format&fit=crop&w=1200&q=80" alt="Caso retail">
+          <h4>B2B Retail Platform</h4>
+          <p style="color:var(--muted)">Implementamos un portal B2B para gestión de pedidos y catálogos para vendedores distribuidores. Resultado: +32% en eficiencia operativa.</p>
+        </div>
+        <div class="case">
+          <img src="https://images.unsplash.com/photo-1520880867055-1e30d1cb001c?auto=format&fit=crop&w=1200&q=80" alt="Caso salud">
+          <h4>Portal Salud Corporativo</h4>
+          <p style="color:var(--muted)">Sistema con autenticación SSO y módulo de teleconsulta. Logramos reducción de tiempos de atención en 40%.</p>
+        </div>
+        <div class="case">
+          <img src="https://images.unsplash.com/photo-1542744095-fcf48d80b0fd?auto=format&fit=crop&w=1200&q=80" alt="Caso eventos">
+          <h4>Site de Eventos y Ticketing</h4>
+          <p style="color:var(--muted)">Ecosistema de venta de entradas con integraciones de pago y panel de administración para organizadores.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- TECH / INTEGRATIONS -->
+    <section class="reveal">
+      <div class="section-title">Stack & Integraciones</div>
+      <div class="section-lead">Flexible: adaptamos stack según requisitos y políticas internas.</div>
+      <div class="chips" aria-hidden="false">
+        <div class="chip">React / Next.js</div>
+        <div class="chip">Node.js • Express</div>
+        <div class="chip">Postgres • MongoDB</div>
+        <div class="chip">AWS / GCP / Azure</div>
+        <div class="chip">Stripe / Webpay</div>
+        <div class="chip">SAML / OIDC</div>
+        <div class="chip">Datadog • Sentry</div>
+        <div class="chip">Netlify / Vercel</div>
+      </div>
+    </section>
+
+    <!-- PRICING -->
+    <section id="pricing" class="reveal">
+      <div class="section-title">Planes & Precios (ejemplo)</div>
+      <div class="section-lead">Modelos de proyecto y paquetes. El paquete Enterprise está diseñado para empresas que requieren soporte, personalización y contrato SLA.</div>
+
+      <div class="pricing" role="list">
+        <div class="plan" role="listitem">
+          <h4>Starter</h4>
+          <div class="price">$420.000 CLP</div>
+          <p style="color:var(--muted)">Proyecto básico — ideal para pilotos y microsites.</p>
+          <ul>
+            <li>Landing personalizada</li>
+            <li>2 rondas de revisión</li>
+            <li>Entrega en 2 semanas</li>
+          </ul>
+        </div>
+
+        <div class="plan pop" role="listitem" aria-label="Enterprise Premium">
+          <h4>Enterprise (Full)</h4>
+          <div class="price">$1.680.000 CLP</div>
+          <p style="color:var(--muted)">Solución completa para empresas. *Proyecto a medida con contrato y SLA.*</p>
+          <ul>
+            <li>Design system y UI kit</li>
+            <li>Integraciones a medida</li>
+            <li>Soporte 24/7 y SLAs</li>
+            <li>Onboarding y training</li>
+          </ul>
+        </div>
+
+        <div class="plan" role="listitem">
+          <h4>Maintenance / Retainer</h4>
+          <div class="price">Desde $280.000 CLP / mes</div>
+          <p style="color:var(--muted)">Paquete pensado para compañías que buscan continuidad, mejoras y soporte priorizado.</p>
+          <ul>
+            <li>Actualizaciones regulares</li>
+            <li>Backups y monitoreo</li>
+            <li>Soporte prioritario</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison table -->
+      <div style="margin-top:28px" class="compare">
+        <table>
+          <thead><tr><th>Característica</th><th>Starter</th><th>Enterprise</th><th>Retainer</th></tr></thead>
+          <tbody>
+            <tr><td>Custom UI</td><td>✔</td><td>✔✔✔</td><td>✔</td></tr>
+            <tr><td>Integraciones</td><td>Limitadas</td><td>Totales (API, SSO)</td><td>Soporte</td></tr>
+            <tr><td>SLA</td><td>No</td><td>24/7</td><td>Prioritario</td></tr>
+            <tr><td>Tiempo de entrega</td><td>2 semanas</td><td>8-12 semanas</td><td>Continuo</td></tr>
+            <tr><td>Precio</td><td>$420k</td><td>$1.68M</td><td>Desde $280k/mes</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ROI / WHY IT'S WORTH -->
+    <section class="reveal">
+      <div class="section-title">Por qué vale la inversión</div>
+      <p class="section-lead">Un producto institucional bien construido reduce costos operativos, mejora conversión y protege la marca. Algunos resultados esperables:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:18px">
+        <div style="background:var(--card);padding:18px;border-radius:10px"><strong>+30%</strong><div style="color:var(--muted);font-size:13px">Mejora en conversión por optimización UX</div></div>
+        <div style="background:var(--card);padding:18px;border-radius:10px"><strong>Reducción</strong><div style="color:var(--muted);font-size:13px">Menos tickets por UX confuso</div></div>
+        <div style="background:var(--card);padding:18px;border-radius:10px"><strong>ROI</strong><div style="color:var(--muted);font-size:13px">Retorno medible en 6-12 meses</div></div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="reveal">
+      <div class="section-title">Preguntas frecuentes</div>
+      <div class="faq">
+        <div class="q"><strong>¿Cómo es el proceso?</strong><p style="color:var(--muted)">Discovery → Propuesta → Diseño → Desarrollo → QA → Lanzamiento → Soporte.</p></div>
+        <div class="q"><strong>¿Qué necesito para comenzar?</strong><p style="color:var(--muted)">Brief, acceso a assets y stakeholders clave. Nosotros guiamos en todo lo demás.</p></div>
+        <div class="q"><strong>¿Hacen integraciones con sistemas internos?</strong><p style="color:var(--muted)">Sí. Evaluamos seguridad y proponemos plan de integración y pruebas.</p></div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact" class="reveal">
+      <div class="section-title">Contacto y demo</div>
+      <p class="section-lead">Si buscas una solución empresarial, agendemos una demo técnica. Deja tus datos y te contactamos en menos de 24 horas.</p>
+
+      <div class="contact">
+        <form name="enterprise-contact" method="POST" data-netlify="true">
+          <!-- Netlify form attributes included; puedes cambiar por tu endpoint -->
+          <input type="hidden" name="form-name" value="enterprise-contact">
+          <input name="company" placeholder="Nombre de la empresa" required />
+          <input name="name" placeholder="Tu nombre" required />
+          <input name="email" placeholder="Email corporativo" type="email" required />
+          <select name="service">
+            <option value="website">Website corporativo</option>
+            <option value="portal">Portal interno / intranet</option>
+            <option value="ecommerce">E-commerce</option>
+            <option value="retainer">Soporte / retainer</option>
+          </select>
+          <textarea name="details" placeholder="Descripción breve del proyecto" rows="5"></textarea>
+          <button type="submit">Solicitar demo</button>
+        </form>
+
+        <aside style="background:var(--card);padding:18px;border-radius:12px;box-shadow:0 8px 30px rgba(2,6,23,0.04)">
+          <h4>Contacto directo</h4>
+          <p style="color:var(--muted)">Agendamos reunión por Zoom y entregamos propuesta en 48h tras discovery.</p>
+          <p style="font-weight:700;margin-top:10px">📧 sc4nl1ne@gmail.com<br>📞 +56 9 3346 4967</p>
+          <div style="margin-top:12px"><a class="cta" href="mailto:sc4nl1ne@gmail.com">Enviar email</a></div>
+        </aside>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div style="display:flex;justify-content:space-between;gap:16px;align-items:center;flex-wrap:wrap">
+        <div>
+          <div style="font-weight:800;color:white">SCANLINE</div>
+          <div style="color:#9fb0b0">Diseño y desarrollo web para empresas</div>
+        </div>
+        <div style="color:#9fb0b0">© 2025 SCANLINE — Todos los derechos reservados</div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Simple reveal on scroll
+    const io = new IntersectionObserver((entries)=>{
+      entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add('visible') })
+    },{threshold:0.12});
+    document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+    // Mobile menu toggle
+    function toggleMenu(){ const menu = document.querySelector('.nav-inner .menu'); if(menu.style.display==='flex') menu.style.display='none'; else menu.style.display='flex' }
+
+    // Netlify form fallback (visual feedback)
+    document.addEventListener('submit', e=>{
+      if(e.target.matches('form[name="enterprise-contact"]')){
+        // prevent default to avoid actual submission in demo env
+        e.preventDefault();
+        alert('Gracias — solicitud recibida. Te contactaremos en menos de 24 horas.');
+        e.target.reset();
+      }
+    });
+  </script>
+</body>
+</html>
