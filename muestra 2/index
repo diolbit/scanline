@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Titan Pro Gym — Landing PRO</title>
+  <meta name="description" content="Gimnasio Titan Pro - Equipos premium, entrenadores certificados y planes profesionales. Demo de landing para clientes."/>
+  <style>
+    /* ====== RESET ====== */
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background:#060606;color:#fff;
+      -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+      line-height:1.45;
+      overflow-x:hidden;
+    }
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+
+    /* ====== NAV ====== */
+    .nav{
+      position:fixed;top:0;left:0;right:0;z-index:1000;
+      background:linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.45));
+      backdrop-filter:blur(6px);
+      padding:14px 6%;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+    }
+    .nav .brand{font-weight:900;color:#00ff88;letter-spacing:1px;font-size:20px}
+    .nav .menu{display:flex;align-items:center;gap:18px}
+    .nav .menu a{color:#ddd;font-weight:600;font-size:14px;padding:8px;border-radius:8px}
+    .nav .menu a:hover{color:#000;background:#00ff88}
+    .nav .cta{margin-left:12px;background:#00ff88;color:#000;padding:8px 14px;border-radius:8px;font-weight:700}
+
+    /* mobile menu button */
+    .nav .hamb{display:none;background:transparent;border:0;color:#fff;font-size:20px}
+
+    /* ====== HERO ====== */
+    header.hero{
+      height:100vh;display:flex;align-items:center;justify-content:center;
+      background:url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1950&q=80') center/cover no-repeat;
+      position:relative;padding:0 6%;
+    }
+    header.hero::after{
+      content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(0,0,0,0.65), rgba(0,0,0,0.65));
+    }
+    .hero-inner{position:relative;z-index:2;max-width:1100px;text-align:center;color:#fff;padding:40px}
+    .hero-title{font-size:48px;line-height:1.02;font-weight:900;margin-bottom:14px;text-transform:uppercase;letter-spacing:1px}
+    .hero-sub{font-size:18px;color:rgba(255,255,255,0.9);margin-bottom:22px;max-width:820px;margin-left:auto;margin-right:auto}
+    .hero-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+    .btn{display:inline-block;padding:14px 26px;border-radius:10px;font-weight:800}
+    .btn-primary{background:#00ff88;color:#000}
+    .btn-ghost{border:1px solid rgba(255,255,255,0.08);color:#fff;background:transparent}
+
+    /* ====== SECTIONS ====== */
+    section{width:100%;padding:90px 6%;max-width:1300px;margin:0 auto}
+    .section-title{text-align:center;color:#00ff88;font-weight:800;font-size:28px;margin-bottom:18px}
+    .lead{text-align:center;color:rgba(255,255,255,0.85);margin-bottom:36px;max-width:900px;margin-left:auto;margin-right:auto}
+
+    /* ====== ABOUT ====== */
+    .about{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:28px;align-items:center}
+    .about img{border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,0.6)}
+    .about p{color:rgba(255,255,255,0.9);font-size:16px}
+
+    /* ====== MACHINES GRID ====== */
+    .machines{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
+    .machine{
+      background:linear-gradient(180deg,#0f0f0f,#0a0a0a);
+      border:1px solid rgba(255,255,255,0.04);
+      border-radius:12px;padding:14px;transition:transform .28s,box-shadow .28s;
+      display:flex;flex-direction:column;gap:10px;align-items:stretch;
+    }
+    .machine:hover{transform:translateY(-8px);box-shadow:0 20px 60px rgba(0,255,136,0.06)}
+    .machine img{height:150px;object-fit:cover;border-radius:10px}
+    .machine h4{color:#00ff88;margin-top:6px;font-size:18px}
+    .machine p{color:rgba(255,255,255,0.85);font-size:14px}
+
+    /* ====== PLANS ====== */
+    .plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:22px}
+    .plan{
+      background:#0d0d0d;border-radius:14px;padding:26px;border:2px solid rgba(0,255,136,0.08);
+      text-align:center;box-shadow:0 10px 40px rgba(0,0,0,0.7);transition:transform .28s,box-shadow .28s;
+    }
+    .plan.pop{border-color:#00ff88;box-shadow:0 18px 60px rgba(0,255,136,0.14);transform:translateY(-6px)}
+    .plan h4{color:#fff;margin-bottom:8px;font-size:20px}
+    .plan .price{font-weight:900;color:#00ff88;font-size:28px;margin:12px 0}
+    .plan ul{list-style:none;color:rgba(255,255,255,0.85);text-align:left;margin:12px 0 18px;padding-left:16px}
+    .plan ul li{padding:6px 0;border-bottom:1px dashed rgba(255,255,255,0.02)}
+    .plan .small{font-size:13px;color:rgba(255,255,255,0.6)}
+
+    /* ====== TESTIMONIALS ====== */
+    .test-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+    .test-card{background:#0f0f0f;padding:22px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 8px 30px rgba(0,0,0,0.7)}
+    .test-card p{color:rgba(255,255,255,0.9);margin-bottom:10px}
+    .test-card strong{color:#00ff88}
+
+    /* ====== GALLERY ====== */
+    .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+    .gallery img{border-radius:10px;height:170px;object-fit:cover;transition:transform .25s}
+    .gallery img:hover{transform:scale(1.04)}
+
+    /* ====== CTA / CONTACT ====== */
+    .cta-box{background:linear-gradient(90deg,#00ff88,#00cc6a);padding:48px;border-radius:16px;color:#000;text-align:center}
+    .cta-box h3{font-size:34px;margin-bottom:12px}
+    .cta-box p{opacity:0.95;margin-bottom:22px}
+
+    /* ====== FOOTER ====== */
+    footer{padding:36px 6%;background:#040404;text-align:center;color:rgba(255,255,255,0.65);margin-top:40px}
+
+    /* ====== RESPONSIVE ====== */
+    @media (max-width:900px){
+      .hero-title{font-size:32px}
+      header.hero{height:80vh}
+      .nav .menu{display:none}
+      .nav .hamb{display:inline-block}
+    }
+
+    /* small screen tweaks */
+    @media (max-width:480px){
+      .hero-title{font-size:24px}
+      .hero-sub{font-size:15px}
+      .plan .price{font-size:22px}
+      section{padding:60px 5%}
+    }
+
+    /* small micro animation helper */
+    .fade-up{opacity:0;transform:translateY(12px);transition:opacity .6s,transform .6s}
+    .fade-up.visible{opacity:1;transform:none}
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <div class="nav" role="navigation" aria-label="Main navigation">
+    <div class="brand">TITAN PRO</div>
+    <div class="menu" aria-hidden="false">
+      <a href="#about">Nosotros</a>
+      <a href="#machines">Máquinas</a>
+      <a href="#planes">Planes</a>
+      <a href="#testimonios">Testimonios</a>
+      <a href="#galeria">Galería</a>
+      <a class="cta" href="#contacto">Contactanos</a>
+    </div>
+    <button class="hamb" aria-label="Abrir menú" onclick="toggleMobile()">☰</button>
+  </div>
+
+  <!-- HERO -->
+  <header class="hero" role="banner">
+    <div class="hero-inner">
+      <div class="hero-text">
+        <div class="hero-title">Alcanza tu máximo potencial</div>
+        <div class="hero-sub">Equipos de última generación, entrenadores certificados y programas personalizados para cada objetivo.</div>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#planes">Ver Planes</a>
+          <a class="btn btn-ghost" href="#contacto">Solicitar Tour</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ABOUT -->
+  <section id="about" class="fade-up">
+    <div class="section-title">Quiénes somos</div>
+    <p class="lead">Titan Pro es un gimnasio orientado a resultados. Instalaciones premium, programas guiados por profesionales y una comunidad que motiva.</p>
+
+    <div class="about">
+      <div>
+        <img src="https://images.unsplash.com/photo-1594737625785-3df2d542d5f5?auto=format&fit=crop&w=1200&q=80" alt="Instalaciones Titan Pro">
+      </div>
+      <div>
+        <p>Contamos con zonas especializadas: pesas libres, máquinas guiadas, área funcional, cardio, estudio de clases dirigidas y espacio de recuperación. Nuestro staff incluye entrenadores certificados en fuerza, hipertrofia, rehabilitación y nutrición deportiva.</p>
+        <ul style="margin-top:12px;color:rgba(255,255,255,0.9);list-style:disc;padding-left:20px">
+          <li>Acceso 24/7 con control digital</li>
+          <li>Evaluación inicial y plan personalizado</li>
+          <li>Clases grupales: HIIT, Yoga, Spinning, Cross Training</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- MACHINES -->
+  <section id="machines" class="fade-up">
+    <div class="section-title">Máquinas y Equipamiento</div>
+    <p class="lead">Equipamiento de marcas reconocidas, mantenido y calibrado regularmente para ofrecer seguridad y rendimiento.</p>
+
+    <div class="machines" id="machines-grid">
+      <!-- Lista extensa de máquinas — puede ser generada dinámicamente -->
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1598962837112-fbc3b4a24937?auto=format&fit=crop&w=1200&q=80" alt="Press de banca">
+        <h4>Press de Banca</h4>
+        <p>Banco olímpico con barra y discos calibrados. Ideal para fuerza pectoral y press plano.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1583454110551-21f2fa2afe26?auto=format&fit=crop&w=1200&q=80" alt="Prensa de pierna">
+        <h4>Prensa de Pierna</h4>
+        <p>Prensa inclinada para trabajo de cuádriceps, femorales y glúteos con distintos ángulos.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=1200&q=80" alt="Remo">
+        <h4>Remo Sentado</h4>
+        <p>Máquina de remo para trabajo de dorsales y resistencia cardiovascular.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1558611848-73f7eb4001a1?auto=format&fit=crop&w=1200&q=80" alt="Cinta de correr">
+        <h4>Cinta de Correr - Alta Velocidad</h4>
+        <p>Cintas profesionales con inclinación y programas personalizados.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1581009146145-b6d89a7a6c33?auto=format&fit=crop&w=1200&q=80" alt="Curl">
+        <h4>Máquina de Curl</h4>
+        <p>Control de recorrido y posicionamiento para trabajo aislado de bíceps.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1579758629718-83b1b93d2601?auto=format&fit=crop&w=1200&q=80" alt="Estación funcional">
+        <h4>Estación Funcional (Rig)</h4>
+        <p>Zona modular para cross training, kettlebells, y TRX.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1514516895676-2e4abeae0a60?auto=format&fit=crop&w=1200&q=80" alt="Bicicleta estática">
+        <h4>Bicicletas Estáticas (Spinning)</h4>
+        <p>Equipos con medidor de potencia para clases y entrenamientos individuales.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1594737625785-3df2d542d5f5?auto=format&fit=crop&w=1200&q=80" alt="Máquina de poleas">
+        <h4>Torre de Poleas</h4>
+        <p>Multiestación para múltiples ejercicios de empuje y tracción.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1547961901-493b2f2f3b5c?auto=format&fit=crop&w=1200&q=80" alt="Plataforma de fuerza">
+        <h4>Plataforma de Powerlifting</h4>
+        <p>Zona para levantamientos olímpicos con plataforma antideslizante.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1540199542-2c0a5d7505c2?auto=format&fit=crop&w=1200&q=80" alt="Máquina de pecho">
+        <h4>Máquina Chest Press</h4>
+        <p>Estación guiada para trabajo de pectorales con seguridad.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1599058917217-ef6b11d2b7fb?auto=format&fit=crop&w=1200&q=80" alt="Zona funcional">
+        <h4>Zona de Estiramiento y Recuperación</h4>
+        <p>Espacio con foam rollers y bancos para movilidad y preparación.</p>
+      </div>
+
+      <div class="machine">
+        <img src="https://images.unsplash.com/photo-1542444459-db63ad61aa30?auto=format&fit=crop&w=1200&q=80" alt="Área de peso libre">
+        <h4>Peso Libre Completo</h4>
+        <p>Rack, barras, discos olímpicos y bancos para entrenamiento libre.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section id="planes" class="fade-up">
+    <div class="section-title">Planes de Membresía</div>
+    <p class="lead">Planes pensados para todo tipo de usuarios: desde quien quiere probar hasta quien busca resultados serios y seguimiento profesional.</p>
+
+    <div class="plans" role="list">
+      <article class="plan" role="listitem" aria-label="Plan Esencial">
+        <h4>Plan Esencial</h4>
+        <p>Acceso completo a máquinas y zona cardio. Locker compartido.</p>
+        <div class="price">$24.990 / mes</div>
+        <ul>
+          <li>Acceso 24/7</li>
+          <li>WiFi en instalaciones</li>
+          <li>Clases grabadas</li>
+        </ul>
+        <div class="small">Sin contrato mínimo. Cancela cuando quieras.</div>
+        <div style="margin-top:16px"><a class="btn btn-primary" href="#contacto">Inscribirme</a></div>
+      </article>
+
+      <article class="plan pop" role="listitem" aria-label="Plan Pro">
+        <h4>Plan Pro</h4>
+        <p>Diseñado para quienes toman el entrenamiento en serio. Incluye asesoría y clases grupales.</p>
+        <div class="price">$180.000 / 12 meses</div>
+        <ul>
+          <li>Asesoría con entrenador (1x mes)</li>
+          <li>Clases grupales ilimitadas</li>
+          <li>Acceso a área funcional y powerlifting</li>
+          <li>Descuento en terapias y nutrición</li>
+        </ul>
+        <div class="small">Pago anual. Equivalente a $15.000/mes.</div>
+        <div style="margin-top:16px"><a class="btn btn-primary" href="#contacto">Quiero Plan Pro</a></div>
+      </article>
+
+      <article class="plan" role="listitem" aria-label="Plan Elite">
+        <h4>Plan Elite</h4>
+        <p>Máxima prioridad: entrenador 1:1, nutrición y sesiones exclusivas.</p>
+        <div class="price">$300.000 / 12 meses</div>
+        <ul>
+          <li>Entrenador 1:1 (1 sesión/semana)</li>
+          <li>Plan nutricional personalizado</li>
+          <li>Acceso prioritario a eventos</li>
+        </ul>
+        <div class="small">Pago anual. Asesoría continua incluida.</div>
+        <div style="margin-top:16px"><a class="btn btn-primary" href="#contacto">Unirme a Elite</a></div>
+      </article>
+    </div>
+  </section>
+
+  <!-- TRAINERS -->
+  <section id="trainers" class="fade-up">
+    <div class="section-title">Nuestros Entrenadores</div>
+    <p class="lead">Equipo profesional con certificaciones en fuerza, rehabilitación y coaching nutricional.</p>
+
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px">
+      <div style="background:#0e0e0e;padding:18px;border-radius:12px;text-align:center">
+        <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=800&q=80" alt="Entrenador" style="border-radius:10px;height:160px;object-fit:cover;margin-bottom:10px">
+        <strong style="display:block;color:#00ff88">Marcos G.</strong>
+        <div style="color:rgba(255,255,255,0.8);margin-top:8px">Coach de fuerza y acondicionamiento</div>
+      </div>
+      <div style="background:#0e0e0e;padding:18px;border-radius:12px;text-align:center">
+        <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80" alt="Entrenador" style="border-radius:10px;height:160px;object-fit:cover;margin-bottom:10px">
+        <strong style="display:block;color:#00ff88">Laura V.</strong>
+        <div style="color:rgba(255,255,255,0.8);margin-top:8px">Especialista en HIIT y clases grupales</div>
+      </div>
+      <div style="background:#0e0e0e;padding:18px;border-radius:12px;text-align:center">
+        <img src="https://images.unsplash.com/photo-1554284126-aa88f22d8d32?auto=format&fit=crop&w=800&q=80" alt="Entrenador" style="border-radius:10px;height:160px;object-fit:cover;margin-bottom:10px">
+        <strong style="display:block;color:#00ff88">Javier R.</strong>
+        <div style="color:rgba(255,255,255,0.8);margin-top:8px">Nutricionista deportivo</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonios" class="fade-up">
+    <div class="section-title">Testimonios</div>
+    <p class="lead">Historias reales de clientes que alcanzaron sus metas en Titan Pro.</p>
+
+    <div class="test-grid" role="list">
+      <div class="test-card" role="listitem"><p>"En 6 meses aumenté 8kg de masa muscular, el equipo me mostró cómo hacerlo seguro."</p><strong>- Andrés</strong></div>
+      <div class="test-card" role="listitem"><p>"Las clases son intensidad real, me encanta la energía del lugar."</p><strong>- Natalia</strong></div>
+      <div class="test-card" role="listitem"><p>"El entrenador personalizado me ayudó a recuperarme de una lesión y mejorar movilidad."</p><strong>- Sebastián</strong></div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section id="galeria" class="fade-up">
+    <div class="section-title">Galería</div>
+    <p class="lead">Instalaciones, clases y ambiente del gimnasio.</p>
+
+    <div class="gallery" aria-hidden="false">
+      <img src="https://images.unsplash.com/photo-1579758629938-03608ccdbaba?auto=format&fit=crop&w=1000&q=80" alt="Sala de pesas">
+      <img src="https://images.unsplash.com/photo-1594737625785-3df2d542d5f5?auto=format&fit=crop&w=1000&q=80" alt="Area funcional">
+      <img src="https://images.unsplash.com/photo-1598962837112-fbc3b4a24937?auto=format&fit=crop&w=1000&q=80" alt="Cinta correr">
+      <img src="https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=1000&q=80" alt="Estudio clases">
+    </div>
+  </section>
+
+  <!-- CTA / CONTACT -->
+  <section id="contacto" style="padding:80px 6% 140px">
+    <div class="cta-box fade-up">
+      <h3>¿Listo para transformar tu cuerpo?</h3>
+      <p>Agenda una visita guiada y recibe una orientación inicial gratuita. También tenemos pases de prueba.</p>
+      <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:18px">
+        <a class="btn btn-primary" href="mailto:contacto@titanprogym.com">Enviar Mensaje</a>
+        <a class="btn btn-ghost" href="tel:+56900000000">Llamar</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>© 2025 Titan Pro Gym — Demo profesional</p>
+    <p style="margin-top:6px;opacity:0.6">Diseño &amp; Demo por Scanline</p>
+  </footer>
+
+  <!-- SCRIPTS: Smooth scroll, reveal on scroll y mobile menu -->
+  <script>
+    // Smooth scroll for internal links
+    document.querySelectorAll('a[href^="#"]').forEach(a=>{
+      a.addEventListener('click',function(e){
+        const href = this.getAttribute('href');
+        if(href.length>1){
+          e.preventDefault();
+          const el=document.querySelector(href);
+          if(el) el.scrollIntoView({behavior:'smooth',block:'start'});
+        }
+      });
+    });
+
+    // simple reveal on scroll
+    const observer = new IntersectionObserver((entries)=>{
+      entries.forEach(entry=>{
+        if(entry.isIntersecting){
+          entry.target.classList.add('visible');
+        }
+      });
+    },{threshold:0.12});
+
+    document.querySelectorAll('.fade-up').forEach(el=>observer.observe(el));
+
+    // mobile menu toggle (simple)
+    function toggleMobile(){
+      const menu = document.querySelector('.nav .menu');
+      if(menu.style.display === 'flex') menu.style.display='none'; else menu.style.display='flex';
+    }
+
+    // small accessibility: focus outline when tabbing
+    document.addEventListener('keydown', (e)=>{
+      if(e.key === 'Tab') document.body.classList.add('user-is-tabbing');
+    });
+  </script>
+</body>
+</html>
